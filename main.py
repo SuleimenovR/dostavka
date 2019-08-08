@@ -1,4 +1,5 @@
 import config
+import flask
 import telebot
 from telebot import types
 import firebase_admin
@@ -7,6 +8,7 @@ from firebase_admin import db
 
 
 bot = telebot.TeleBot(config.token)
+server = flask.Flask(name)
 
 cred = credentials.Certificate("bott.json")
 firebase_admin.initialize_app(cred, {'databaseURL': 'https://bott-c6506.firebaseio.com/'})
@@ -440,5 +442,20 @@ def Number (message):
 
 
 
-if __name__ == '__main__':
-    bot.polling(none_stop=True)
+@server.route('/' + config.token, methods=['POST'])
+def get_message():
+     bot.process_new_updates([types.Update.de_json(flask.request.stream.read().decode("utf-8"))])
+     return "!", 200
+
+@server.route('/', methods=["GET"])
+def index():
+     print("hello webhook!")
+     bot.remove_webhook()
+     bot.set_webhook(url=f"https://{config.appName}.herokuapp.com/{config.token}")
+     return "Hello from Heroku!", 200
+     
+print(f"https://{config.appName}.herokuapp.com/{config.token}")
+print(f"PORT: {int(os.environ.get('PORT', 5000))}")
+if __name__ == "__main__":
+     print("started")
+     server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
