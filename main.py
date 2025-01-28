@@ -12,7 +12,7 @@ bot = telebot.TeleBot(config.token)
 server = flask.Flask(name)
 
 cred = credentials.Certificate("bott.json")
-firebase_admin.initialize_app(cred, {'databaseURL': 'https://bott-c6506.firebaseio.com/'})
+firebase_admin.initialize_app(cred, {'databaseURL': 'firebase'})
 
 
 
